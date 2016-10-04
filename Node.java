@@ -3,6 +3,8 @@ import java.util.ArrayList;
 public class Node<K extends Comparable<K>, T> {
 	protected boolean isLeafNode;
 	protected ArrayList<K> keys;
+	protected IndexNode<K, T> parent;
+	protected int indexinParent;
 
 	public boolean isOverflowed() {
 		return keys.size() > 2 * BPlusTree.D;
@@ -12,4 +14,22 @@ public class Node<K extends Comparable<K>, T> {
 		return keys.size() < BPlusTree.D;
 	}
 
+	public void setParent(IndexNode<K, T> parent) {
+		this.parent = parent;
+		for (int i = 0; i < parent.children.size(); i++) {
+			if (parent.children.get(i).equals(this)) {
+				this.indexinParent = i;
+				return;
+			}
+		}
+	}
+
+	public IndexNode<K, T> getParent() {
+		return this.parent;
+	}
+
+	public int getIndexInParent() {
+		return this.indexInParent;
+	}
+	
 }
