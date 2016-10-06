@@ -38,25 +38,57 @@ public class BPlusTree<K extends Comparable<K>, T> {
 	 * @param leaf, any other relevant data
 	 * @return the key/node pair as an Entry
 	 */
-	public Entry<K, Node<K,T>> splitLeafNode(LeafNode<K,T> leaf, ...) {
+	public Entry<K, Node<K,T>> splitLeafNode(LeafNode<K,T> leaf) {
+    K splittingKey = (K)leaf.keys.get(D);
 
-		return null;
+    List<K> rightKeys = new ArrayList<K>();
+		List<T> rightValues = new ArrayList<T>();
+    rightKeys.addAll(leaf.keys.subList(D, leaf.keys.size()));
+    rightValues.addAll(leaf.values.subList(D, leaf.values.size()));
+
+    LeafNode<K, T> right = new LeafNode<K, T>(rightKeys, rightValues);
+
+    leaf.keys.subList(D, leaf.keys.size()).clear();
+    leaf.values.subList(D, leaf.values.size()).clear();
+
+		// update next leaf
+    if (leaf.nextLeaf != null) {
+      right.nextLeaf = leaf.nextLeaf;
+    }
+    leaf.nextLeaf = right;
+
+		return new AbstractMap.SimpleEntry<K, Node<K,T>>(splittingKey, right);
 	}
 
 	/**
-	 * TODO split an indexNode and return the new right node and the splitting
+	 * split an indexNode and return the new right node and the splitting
 	 * key as an Entry<slitingKey, RightNode>
 	 *
 	 * @param index, any other relevant data
 	 * @return new key/node pair as an Entry
 	 */
-	public Entry<K, Node<K,T>> splitIndexNode(IndexNode<K,T> index, ...) {
+	public Entry<K, Node<K,T>> splitIndexNode(IndexNode<K,T> index) {
+		// Splitting key is the Dth key in new left node
+    K splittingKey = (K)index.keys.get(D);
 
-		return null;
+    // Move D+1th to the last to new right node
+    List<K> rightKeys = new ArrayList<K>();
+		List<Node<K, T>> rightChildren = new ArrayList<Node<K, T>>();
+    rightKeys.addAll(index.keys.subList(D + 1, index.keys.size()));
+    rightChildren.addAll(index.children.subList(D + 1, index.children.size()));
+
+    IndexNode<K, T> right = new IndexNode<K, T>(rightKeys, rightChildren);
+
+    // Remove all keys and children after Dth entry
+    index.keys.subList(D, index.keys.size()).clear();
+    index.children.subList(D+1, index.children.size()).clear();
+
+		// use this to create a new entry
+		return new AbstractMap.SimpleEntry<K, Node<K,T>>(splittingKey, right);
 	}
 
 	/**
-	 * TODO Delete a key/value pair from this B+Tree
+	 * Delete a key/value pair from this B+Tree
 	 * @param key
 	 */
 	public void delete(K key) {
@@ -91,9 +123,56 @@ public class BPlusTree<K extends Comparable<K>, T> {
 			}
 			// handle leaf node overflow
 			if (leaf.isUnderflowed()) {
-
+				// leaf has left sibling
+				if (leaf.getIndexInParent() >= 1) {
+					LeafNode<K, T> leftSibling = (LeafNode<K, T>)leaf.getParent().children.get(leaf.getIndexInParent() - 1);
+    			return handleLeafNodeUnderflow(leftSibling, leaf, leaf.getParent());
+				}
+				else {	// has no left sibling, try right sibling instead
+					LeafNode<K, T> rightSibling = (LeafNode<K, T>)leaf.getParent().children.get(leaf.getIndexInParent() + 1);
+    			return handleLeafNodeUnderflow(leaf, rightSibling, leaf.getParent());
+				}
 			}
 		}
+		// the child is an index node
+		else {
+			IndexNode<K, T> Index = (IndexNode<K, T>)child;
+			// If key is smaller than the first key in the index node, traverse left child
+			if (key.compareTo(index.keys.get(0)) < 0) {
+				splitIndex = deleteHelper(key, index.children.get(0), index, splitIndex);
+			}
+			// If key is larger than the last key in the index node, traverse right child
+			else if (key.compareTo(index.keys.get(index.keys.size() - 1)) >= 0) {
+				splitIndex = deleteHelper(key, index.children.get(index.keys.size() - 1), index, splitIndex);
+			}
+			else {
+				ListIterator<K> iterator = index.keys.listIterator();
+        while (iterator.hasNext()) {
+          if (iterator.next().compareTo(key) > 0) {
+          	splitIndex = deleteHelper(key, index.children.get(iterator.previousIndex()), index, splitIndex);
+          	break;
+          }
+        }
+			}
+		}
+
+		// delete split key
+		if (splitIndex != -1 && child != root) {
+			child.keys.remove(splitIndex);
+			// Check child underflowed, call handle index underflow
+			if (child.isUnderflowed()) {
+				if (child.getIndexInParent() >= 1) {
+					IndexNode<K, T> leftSibling = (IndexNode<K, T>) child.getParent().children.get(child.getIndexInParent() - 1);
+					splitIndex = handleIndexNodeUnderflow(leftSibling, (IndexNode<K, T>)child, child.getParent());
+				} else {
+					IndexNode<K, T> rightSibling = (IndexNode<K, T>) child.getParent().children.get(child.getIndexInParent() + 1);
+					splitIndex = handleIndexNodeUnderflow((IndexNode<K, T>)child, rightSibling, child.getParent());
+				}
+			}
+			splitIndex = -1;
+		}
+
+		return splitIndex;
 	}
 
 	/**
