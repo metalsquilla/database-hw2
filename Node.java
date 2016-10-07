@@ -4,7 +4,7 @@ public class Node<K extends Comparable<K>, T> {
 	protected boolean isLeafNode;
 	protected ArrayList<K> keys;
 	protected IndexNode<K, T> parent;
-	protected int indexinParent;
+	protected int indexInParent;
 
 	public boolean isOverflowed() {
 		return keys.size() > 2 * BPlusTree.D;
@@ -16,10 +16,13 @@ public class Node<K extends Comparable<K>, T> {
 
 	public void setParent(IndexNode<K, T> parent) {
 		this.parent = parent;
+	}
+
+	public void setIndexInParent() {
 		for (int i = 0; i < parent.children.size(); i++) {
 			if (parent.children.get(i).equals(this)) {
-				this.indexinParent = i;
-				return;
+				this.indexInParent = i;
+				break;
 			}
 		}
 	}
@@ -31,5 +34,5 @@ public class Node<K extends Comparable<K>, T> {
 	public int getIndexInParent() {
 		return this.indexInParent;
 	}
-	
+
 }

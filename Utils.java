@@ -3,17 +3,17 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Class contains methods assisting coding and testing
- * 
+ *
  */
 public class Utils {
 
 	/**
 	 * Bulk Insert test data
-	 * 
+	 *
 	 * @param b
 	 * @param tests
 	 */
-	public static <K extends Comparable<K>, T> void 
+	public static <K extends Comparable<K>, T> void
 	    bulkInsert(BPlusTree<K,T> b, K[] tests, T[] testValues) {
 		for (int i = 0; i < tests.length; i++) {
 			b.insert(tests[i], testValues[i]);
@@ -21,16 +21,16 @@ public class Utils {
 
 	}
 
-	
-	public static <K extends Comparable<K>,T> String 
+
+	public static <K extends Comparable<K>,T> String
     outputTree(BPlusTree<K,T> tree) {
   /* Temporary queue. */
   LinkedBlockingQueue<Node<K,T>> queue;
-  
+
   /* Create a queue to hold node pointers. */
   queue = new LinkedBlockingQueue<Node<K,T>>();
   String result = "";
-  
+
   int nodesInCurrentLevel = 1;
   int nodesInNextLevel = 0;
   ArrayList<Integer> childrenPerIndex = new ArrayList<Integer>();
@@ -58,7 +58,7 @@ public class Utils {
         } else {
           result += "]#";
         }
-  
+
       }
     } else {
       IndexNode<K,T> index = ((IndexNode<K,T>) target);
@@ -73,23 +73,23 @@ public class Utils {
       }
       nodesInNextLevel += index.children.size();
     }
-  
+
     if (nodesInCurrentLevel == 0) {
       result += "%%";
       nodesInCurrentLevel = nodesInNextLevel;
       nodesInNextLevel = 0;
     }
-  
+
   }
-  
+
   return result;
 
 }
-	
-	
+
+
 	/**
 	 * print the current tree to console
-	 * 
+	 *
 	 * @param root
 	 */
 	public static <K extends Comparable<K>,T> void printTree(BPlusTree<K,T> tree){

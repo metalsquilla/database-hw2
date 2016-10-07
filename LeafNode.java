@@ -25,7 +25,7 @@ public class LeafNode<K extends Comparable<K>, T> extends Node<K, T> {
 
 	/**
 	 * insert key/value into this node so that it still remains sorted
-	 * 
+	 *
 	 * @param key
 	 * @param value
 	 */
@@ -48,6 +48,15 @@ public class LeafNode<K extends Comparable<K>, T> extends Node<K, T> {
 			}
 
 		}
+	}
+
+	public T getValueByKey(K key) {
+	  for (K listKey: keys) {
+      if (key.compareTo(listKey) == 0) {
+        return values.get(keys.indexOf(listKey));
+      }
+	  }
+	  return null;
 	}
 
 }
