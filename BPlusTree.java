@@ -40,7 +40,7 @@ public class BPlusTree<K extends Comparable<K> , T> {
       } else {
         // Traverse through the index to find the leafNode
         // TODO: This can be optimized using binary search
-        for (int i = 1; i < index.keys.size() - 1; i++) {
+        for (int i = 1; i < index.keys.size(); i++) {
           if (index.keys.get(i).compareTo(key) > 0)
             return searchHelper(index.children.get(i), key);
         }
@@ -279,11 +279,11 @@ public class BPlusTree<K extends Comparable<K> , T> {
 
       // Store all keys and values from left to right
       ArrayList<K> keys = new ArrayList<K>();
-      ArrayList<T> allValues = new ArrayList <T>();
+      ArrayList<T> vals = new ArrayList <T>();
       keys.addAll(left.keys);
       keys.addAll(right.keys);
-      allValues.addAll(left.values);
-      allValues.addAll(right.values);
+      vals.addAll(left.values);
+      vals.addAll(right.values);
 
       int leftSize = totalSize / 2;
 
@@ -294,9 +294,9 @@ public class BPlusTree<K extends Comparable<K> , T> {
 
       // Add first half keys and values into left and rest into right
       left.keys.addAll(keys.subList(0, leftSize));
-      left.values.addAll(allValues.subList(0, leftSize));
+      left.values.addAll(vals.subList(0, leftSize));
       right.keys.addAll(keys.subList(leftSize, keys.size()));
-      right.values.addAll(allValues.subList(leftSize, allValues.size()));
+      right.values.addAll(vals.subList(leftSize, vals.size()));
 
       parent.keys.set(childIndex - 1, parent.children.get(childIndex).keys.get(0));
       return -1;
@@ -343,7 +343,7 @@ public class BPlusTree<K extends Comparable<K> , T> {
 
     // Redistribute if possible
     if ((left.keys.size() + right.keys.size()) >= (2 * D)) {
-
+ - 1
       // All keys including the parent key
       ArrayList<K> keys = new ArrayList<K>();
       ArrayList<Node<K, T>> children = new ArrayList<Node<K, T>>();
