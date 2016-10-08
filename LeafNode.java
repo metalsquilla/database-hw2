@@ -50,7 +50,7 @@ public class LeafNode<K extends Comparable<K>, T> extends Node<K, T> {
 		}
 	}
 
-	public T getValueByKey(K key) {
+	public T getValue(K key) {
 	  for (K listKey: keys) {
       if (key.compareTo(listKey) == 0) {
         return values.get(keys.indexOf(listKey));

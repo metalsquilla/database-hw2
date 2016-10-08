@@ -16,9 +16,6 @@ public class Node<K extends Comparable<K>, T> {
 
 	public void setParent(IndexNode<K, T> parent) {
 		this.parent = parent;
-	}
-
-	public void setIndexInParent() {
 		for (int i = 0; i < parent.children.size(); i++) {
 			if (parent.children.get(i).equals(this)) {
 				this.indexInParent = i;
