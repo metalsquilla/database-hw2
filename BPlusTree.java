@@ -32,7 +32,7 @@ public class BPlusTree<K extends Comparable<K> , T> {
     } else {
       IndexNode<K, T> index = (IndexNode<K, T>)root;
 
-      // If key < first key in the index then traverse the rightmost child
+      // If key < first key in the index then traverse the leftmost child
       if (key.compareTo(index.keys.get(0)) < 0) {
         return searchHelper(index.children.get(0), key);
       } else if (key.compareTo(index.keys.get(index.keys.size() - 1)) >= 0) {
