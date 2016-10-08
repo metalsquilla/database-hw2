@@ -41,6 +41,6 @@ The deletion is like the inverse process of insertion, so the code structures of
 
 However, the node underflow is more complex to handle than overflow since either leaf node or index node could be merged or redistributed with its siblings. So we added a parent and the corresponding child index to the Node class. This makes it easier to find the siblings of a node.
 
-### acknowledgement
+## acknowledgement
 1. In order to get a better understanding of implementing B+ tree, we have read the blog posted by Lin Li at http://jxlilin.blogspot.com/2013/11/b-tree-implementation-in-java.html.
 2. We referred http://stackoverflow.com/ to solve some syntax problems, such as creating a new Entry using new AbstractMap.SimpleEntry<K, Node<K, T>>(key, node) and trim an ArrayList effectively using ArrayList.subList(begin, end).clear().
